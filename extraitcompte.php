@@ -99,7 +99,7 @@ foreach (array_reverse($invoices) as $invoice) {
     print '<td>' . price($invoiceObj->total_ttc) . '</td>';
     print '<td>' . price($paid) . '</td>';
     print '<td>' . price($remaining_due) . '</td>';
-    print '<td>' . $invoiceObj->getLibStatut(1) . '</td>';
+    print '<td>' . $invoiceObj->getLibStatut(1, $paid) . '</td>';
     print '<td>';
     print empty($infoPaiement) ? 'Aucun paiement' : $infoPaiement;
     print '</td>';
@@ -115,15 +115,16 @@ $db->close();
 function getCreditNotesFromInvoice($id)
 {
     global $db;
-        $result = array();
 
-        $sql = "SELECT rowid, datec, fk_facture, fk_facture_source, amount_ttc";
-        // $sql .= " FROM ".$this->db->prefix().$this->table_element;
-        $sql .= " FROM ".$db->prefix().'societe_remise_except';
-        $sql .= " WHERE fk_facture_source = ".((int) $id);
-        // $sql .= " AND type = 2";
-        $resql = $db->query($sql);
-    print $sql;
+    $result = array();
+
+    $sql = "SELECT rowid, datec, fk_facture, fk_facture_source, amount_ttc";
+    // $sql .= " FROM ".$this->db->prefix().$this->table_element;
+    $sql .= " FROM ".$db->prefix().'societe_remise_except';
+    $sql .= " WHERE fk_facture_source = ".((int) $id);
+    // $sql .= " AND type = 2";
+    $resql = $db->query($sql);
+
     if ($resql) {
         $num = $db->num_rows($resql);
         $i = 0;
