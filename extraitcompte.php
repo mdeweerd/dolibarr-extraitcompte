@@ -1,8 +1,8 @@
 <?php
 // Load Dolibarr environment
 
-if (false === (@require_once '../../main.inc.php')) {  // From htdocs directory
-    require_once '../../../main.inc.php'; // From "custom" directory
+if (false === (@include_once '../../main.inc.php')) {  // From htdocs directory
+    include_once '../../../main.inc.php'; // From "custom" directory
 }
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
@@ -26,9 +26,11 @@ $facture_static = new Facture($db);
 $invoices = $facture_static->liste_array(0, 0, null, $client_id);
 
 // Sort invoices by date
-usort($invoices, function($a, $b) {
-    return strtotime($a['date']) - strtotime($b['date']);
-});
+usort(
+    $invoices, function ($a, $b) {
+        return strtotime($a['date']) - strtotime($b['date']);
+    }
+);
 
 // Display the extract
 llxHeader('', 'Extrait de Compte');
@@ -56,15 +58,33 @@ foreach (array_reverse($invoices) as $invoice) {
     // Fetch payments for the invoice
     $payments = $invoiceObj->getListOfPayments();
 
-	$paid_total = $invoiceObj->getSommePaiement();
+    $paid_total = $invoiceObj->getSommePaiement();
     // Calculate paid amounts
     $paid = 0;
-	$infoPaiement = '';
-	// array(7) { ["amount"]=> string(13) "3000.00000000" ["type"]=> string(3) "VIR" ["date"]=> string(19) "2022-09-13 12:00:00" ["num"]=> string(0) "" ["ref"]=> string(12) "PAY2209-0076" ["ref_ext"]=> string(0) "" ["fk_bank_line"]=> string(3) "182" }
+    $infoPaiement = '';
+    // array(7) { ["amount"]=> string(13) "3000.00000000" ["type"]=> string(3) "VIR" ["date"]=> string(19) "2022-09-13 12:00:00" ["num"]=> string(0) "" ["ref"]=> string(12) "PAY2209-0076" ["ref_ext"]=> string(0) "" ["fk_bank_line"]=> string(3) "182" }
     foreach ($payments as $payment) {
         $paid += $payment['amount'];
-		$infoPaiement .= '<div>'. $payment['ref'] ." - <b>".dol_print_date($payment['date'], 'day') . '</b> - ' /*. $payment["type"]." - "*/.price($payment['amount']) .'</div>';
+        $infoPaiement .= '<div>'. $payment['ref'] ." - <b>".dol_print_date($payment['date'], 'day') . '</b> - ' /*. $payment["type"]." - "*/.price($payment['amount']) .'</div>';
     }
+
+        // Retrieve credit note ids
+        $invoiceObj->getListIdAvoirFromInvoice();  // fills property $creditnote_ids
+        $creditnote_ids = $invoiceObj->creditnote_ids;  // fills property $creditnote_ids
+    $creditnotes = getCreditNotesFromInvoice($invoice['id']);
+
+    $credits = [];
+    foreach ($creditnotes as $creditnote) {
+        $destInvoice = new Facture($db);
+        $destInvoice->fetch($creditnote['invoice_used_id']);
+        $ref = $destInvoice->ref;
+        $datec = $creditnote['date'];
+        $amount = $creditnote['amount_ttc'];
+        $credits[] = '<div>'. $ref ." - <b>".dol_print_date($datec, 'day') . '</b> - ' /*. $payment["type"]." - "*/.price(-$amount) .'</div>';
+        $paid -= $amount;
+    }
+    $infoPaiement.=implode("", $credits);
+
 
     // Calculate remaining amount due
     // $remaining_due = $invoiceObj->total_ttc - ($paid_ht + $paid_vat);
@@ -81,7 +101,7 @@ foreach (array_reverse($invoices) as $invoice) {
     print '<td>' . price($remaining_due) . '</td>';
     print '<td>' . $invoiceObj->getLibStatut(1) . '</td>';
     print '<td>';
-	print empty($infoPaiement) ? 'Aucun paiement' : $infoPaiement;
+    print empty($infoPaiement) ? 'Aucun paiement' : $infoPaiement;
     print '</td>';
     print '</tr>';
 }
@@ -90,4 +110,38 @@ print '</table>';
 
 llxFooter();
 $db->close();
+
+
+function getCreditNotesFromInvoice($id)
+{
+    global $db;
+        $result = array();
+
+        $sql = "SELECT rowid, datec, fk_facture, fk_facture_source, amount_ttc";
+        // $sql .= " FROM ".$this->db->prefix().$this->table_element;
+        $sql .= " FROM ".$db->prefix().'societe_remise_except';
+        $sql .= " WHERE fk_facture_source = ".((int) $id);
+        // $sql .= " AND type = 2";
+        $resql = $db->query($sql);
+    print $sql;
+    if ($resql) {
+        $num = $db->num_rows($resql);
+        $i = 0;
+        while ($i < $num) {
+            $row = $db->fetch_row($resql);
+            $amount_ttc;
+            $item = array(
+            'date' => $row[1],
+            'invoice_used_id' => $row[2],
+            'invoice_src_id' => $row[3],
+            'amount_ttc' => $row[4]
+            );
+            $result[] = $item;
+            $i++;
+        }
+    }
+
+        return $result;
+}
+
 
