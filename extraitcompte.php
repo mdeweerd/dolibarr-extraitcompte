@@ -18,19 +18,17 @@ $client_id = GETPOST('id', 'int');
 // Fetch client information
 $client = new Societe($db);
 if ($client->fetch($client_id) <= 0) {
-    dol_print_error($db, $client->error);
+    setEventMessages($client->error, $client->errors, 'errors');
     exit;
 }
 
 $facture_static = new Facture($db);
 $invoices = $facture_static->liste_array(0, 0, null, $client_id);
 
-// Sort invoices by date
-usort(
-    $invoices, function ($a, $b) {
-        return strtotime($a['date']) - strtotime($b['date']);
-    }
-);
+if (!is_array($invoices)) {
+    setEventMessages($facture_static->error, $facture_static->errors, 'errors');
+    exit;
+}
 
 // Display the extract
 llxHeader('', 'Extrait de Compte');
@@ -53,10 +51,18 @@ print '</tr>';
 $totalDue = 0;
 foreach (array_reverse($invoices) as $invoice) {
     $invoiceObj = new Facture($db);
-    $invoiceObj->fetch($invoice['id']);
+    if ($invoiceObj->fetch($invoice['id']) <= 0) {
+        setEventMessages($invoiceObj->error, $invoiceObj->errors, 'errors');
+        continue;
+    }
 
     // Fetch payments for the invoice
     $payments = $invoiceObj->getListOfPayments();
+
+    if (!is_array($payments)) {
+        setEventMessages($invoiceObj->error, $invoiceObj->errors, 'errors');
+        continue;
+    }
 
     $paid_total = $invoiceObj->getSommePaiement();
     // Calculate paid amounts
@@ -73,10 +79,17 @@ foreach (array_reverse($invoices) as $invoice) {
         $creditnote_ids = $invoiceObj->creditnote_ids;  // fills property $creditnote_ids
     $creditnotes = getCreditNotesFromInvoice($invoice['id']);
 
+    if (!is_array($creditnotes)) {
+        continue;
+    }
+
     $credits = [];
     foreach ($creditnotes as $creditnote) {
         $destInvoice = new Facture($db);
-        $destInvoice->fetch($creditnote['invoice_used_id']);
+        if ($destInvoice->fetch($creditnote['invoice_used_id']) <= 0) {
+            setEventMessages($destInvoice->error, $destInvoice->errors, 'errors');
+            continue;
+        }
         $ref = $destInvoice->ref;
         $datec = $creditnote['date'];
         $amount = $creditnote['amount_ttc'];
@@ -84,7 +97,6 @@ foreach (array_reverse($invoices) as $invoice) {
         $paid -= $amount;
     }
     $infoPaiement.=implode("", $credits);
-
 
     // Calculate remaining amount due
     // $remaining_due = $invoiceObj->total_ttc - ($paid_ht + $paid_vat);
@@ -99,7 +111,7 @@ foreach (array_reverse($invoices) as $invoice) {
     print '<td>' . price($invoiceObj->total_ttc) . '</td>';
     print '<td>' . price($paid) . '</td>';
     print '<td>' . price($remaining_due) . '</td>';
-    print '<td>' . $invoiceObj->getLibStatut(1) . '</td>';
+    print '<td>' . $invoiceObj->getLibStatut(1, $paid) . '</td>';
     print '<td>';
     print empty($infoPaiement) ? 'Aucun paiement' : $infoPaiement;
     print '</td>';
@@ -111,37 +123,38 @@ print '</table>';
 llxFooter();
 $db->close();
 
-
 function getCreditNotesFromInvoice($id)
 {
     global $db;
-        $result = array();
 
-        $sql = "SELECT rowid, datec, fk_facture, fk_facture_source, amount_ttc";
-        // $sql .= " FROM ".$this->db->prefix().$this->table_element;
-        $sql .= " FROM ".$db->prefix().'societe_remise_except';
-        $sql .= " WHERE fk_facture_source = ".((int) $id);
-        // $sql .= " AND type = 2";
-        $resql = $db->query($sql);
-    print $sql;
-    if ($resql) {
-        $num = $db->num_rows($resql);
-        $i = 0;
-        while ($i < $num) {
-            $row = $db->fetch_row($resql);
-            $amount_ttc;
-            $item = array(
-            'date' => $row[1],
-            'invoice_used_id' => $row[2],
-            'invoice_src_id' => $row[3],
-            'amount_ttc' => $row[4]
-            );
-            $result[] = $item;
-            $i++;
-        }
+    $result = array();
+
+    $sql = "SELECT rowid, datec, fk_facture, fk_facture_source, amount_ttc";
+    // $sql .= " FROM ".$this->db->prefix().$this->table_element;
+    $sql .= " FROM ".$db->prefix().'societe_remise_except';
+    $sql .= " WHERE fk_facture_source = ".((int) $id);
+    // $sql .= " AND type = 2";
+    $resql = $db->query($sql);
+
+    if (!$resql) {
+        setEventMessages($db->error(), null, 'errors');
+        return -1;
     }
 
-        return $result;
+    $num = $db->num_rows($resql);
+    $i = 0;
+    while ($i < $num) {
+        $row = $db->fetch_row($resql);
+        $amount_ttc;
+        $item = array(
+	        'date' => $row[1],
+	        'invoice_used_id' => $row[2],
+	        'invoice_src_id' => $row[3],
+	        'amount_ttc' => $row[4]
+        );
+        $result[] = $item;
+        $i++;
+    }
+
+    return $result;
 }
-
-
