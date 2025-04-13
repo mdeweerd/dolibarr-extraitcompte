@@ -34,7 +34,17 @@ $picto = 'company';
 
 // Display the header with the tab list
 llxHeader('', 'Extrait de Compte');
-print dol_fiche_head($head, 'extraitcompte', $langs->trans("ExtraitCompte"), 0, 'company');
+
+  // $linkback = '<a href="'.DOL_URL_ROOT.'/comm/card.php?soc_id='.$client_id.'">'.$langs->trans("BackToList").'</a>';
+  $linkback = '';
+
+ print dol_get_fiche_head($head, 'extraitcompte', $langs->trans("ExtraitCompte"), -1, 'company');
+    dol_banner_tab($thirdparty, 'socid', $linkback, 0/*($user->socid ? 0 : 1)*/, 'rowid', 'nom');
+
+
+
+//    print dol_get_fiche_head($head, 'extraitcompte', $langs->trans("VATPayment"), -1, 'company', 0, '', '', 0, '', 1);
+
 
 // Display the extract
 $extraitCompte->displayExtraitCompte($client_id);
