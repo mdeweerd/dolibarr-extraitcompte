@@ -12,13 +12,27 @@ $langs->loadLangs(array("companies", "bills", "payments"));
 
 $client_id = GETPOST('id', 'int');
 
+$result = restrictedArea($user, 'societe', '', '');
+
 // Load the ExtraitCompte class
 require_once DOL_DOCUMENT_ROOT.'/custom/extraitcompte/class/ExtraitCompte.class.php';
 $extraitCompte = new ExtraitCompte($db);
 
+// Include the library for dol_get_fiche_head
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+
+
+    $thirdparty = new Societe($db);
+    $thirdparty->id = $client_id;
+    $thirdparty->fetch($client_id);
+
+$head = societe_prepare_head($thirdparty);
+$title=$langs->trans("ThirdParty");
+$picto='company';
+
 // Display the header with the tab list
 llxHeader('', 'Extrait de Compte');
-print dol_get_fiche_head(prepareHead($extraitCompte, $client_id), 'extraitcompte', $langs->trans("ExtraitCompte"), 0, 'bill');
+print dol_fiche_head($head, 'extraitcompte', $langs->trans("ExtraitCompte"), 0, 'company');
 
 // Display the extract
 $extraitCompte->displayExtraitCompte($client_id);
@@ -28,19 +42,3 @@ print dol_get_fiche_end();
 llxFooter();
 
 $db->close();
-
-function prepareHead($extraitCompte, $client_id) {
-    global $langs;
-
-    $head = array();
-    $head[] = array(
-        'text' => $langs->trans("ExtraitCompte"),
-        'url' => dol_buildpath('/custom/extraitcompte/card.php', 1) . '?id=' . $client_id,
-        'active' => 1
-    );
-
-    // Add other tabs if needed
-    // $head[] = array(...);
-
-    return $head;
-}
