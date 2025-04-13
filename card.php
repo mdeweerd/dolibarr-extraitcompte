@@ -1,8 +1,10 @@
 <?php
+/* Copyright (C) 2025		MDW	<mdeweerd@users.noreply.github.com>
+ */
 // Load Dolibarr environment
 
 if (false === (@include_once '../../main.inc.php')) {  // From htdocs directory
-    include_once '../../../main.inc.php'; // From "custom" directory
+	include_once '../../../main.inc.php'; // From "custom" directory
 }
 
 global $db, $langs, $user;
@@ -22,13 +24,13 @@ $extraitCompte = new ExtraitCompte($db);
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 
 
-    $thirdparty = new Societe($db);
-    $thirdparty->id = $client_id;
-    $thirdparty->fetch($client_id);
+$thirdparty = new Societe($db);
+$thirdparty->id = $client_id;
+$thirdparty->fetch($client_id);
 
 $head = societe_prepare_head($thirdparty);
-$title=$langs->trans("ThirdParty");
-$picto='company';
+$title = $langs->trans("ThirdParty");
+$picto = 'company';
 
 // Display the header with the tab list
 llxHeader('', 'Extrait de Compte');
