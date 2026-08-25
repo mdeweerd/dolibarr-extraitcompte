@@ -19,7 +19,7 @@ $all_dates = GETPOST('all_dates', 'alpha');
 $result = restrictedArea($user, 'societe', '', '');
 
 // Load the ExtraitCompte class
-require_once DOL_DOCUMENT_ROOT.'/custom/extraitcompte/class/ExtraitCompte.class.php';
+require_once __DIR__.'/class/ExtraitCompte.class.php';
 $extraitCompte = new ExtraitCompte($db);
 
 // Include the library for dol_get_fiche_head
