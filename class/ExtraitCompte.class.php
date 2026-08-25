@@ -52,8 +52,10 @@ class ExtraitCompte
         $earliest_unpaid_date = $this->findEarliestUnpaidInvoiceDate($all_invoices);
 
         // Apply backtrack rule: if there's an unpaid invoice older than start_date, adjust start_date
-        if ($earliest_unpaid_date && $earliest_unpaid_date < $start_date) {
-            $start_date = $earliest_unpaid_date;
+        // Convert start_date string to timestamp for comparison
+        $start_timestamp = dol_string_nohtml_nojs($start_date);
+        if ($earliest_unpaid_date && $earliest_unpaid_date < $this->db->jdate($start_timestamp)) {
+            $start_date = dol_print_date($earliest_unpaid_date, '%Y-%m-%d');
         }
 
         $end_date = date('Y-m-d');
