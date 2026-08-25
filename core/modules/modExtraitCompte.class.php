@@ -1,5 +1,6 @@
 <?php
 include_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
+
 class modExtraitCompte extends DolibarrModules
 {
     public function __construct($db)
@@ -46,6 +47,8 @@ class modExtraitCompte extends DolibarrModules
 
         $this->rights[$r][0] = $this->numero . sprintf("%02d", $r + 1);
         $this->rights[$r][1] = 'Lire les extraits de compte';
+        //$this->rights[$r][2] = 'r';
+        //$this->rights[$r][3] = 0;
         $this->rights[$r][4] = 'extraitcompte';
         $this->rights[$r][5] = 'read';
         $r++;
@@ -53,7 +56,8 @@ class modExtraitCompte extends DolibarrModules
         $this->tabs = array();
         $r = 0;
 
-        $this->tabs[$r] = 'thirdparty:+extraitcompte:ExtraitCompte:$user->rights->extraitcompte->read:/custom/extraitcompte/extraitcompte.php?id=__ID__';
+        // $this->tabs[$r] = 'thirdparty:+extraitcompte:ExtraitCompte:$user->rights->extraitcompte->read:/custom/extraitcompte/card.php?id=__ID__';
+        $this->tabs[$r] = array('data' => 'thirdparty:+extraitcompte:ExtraitCompte:extraitcompte@extraitcompte:$user->hasRight("extraitcompte", "extraitcompte", "read"):/custom/extraitcompte/card.php?id=__ID__');
     }
 
     public function init($options = '')
