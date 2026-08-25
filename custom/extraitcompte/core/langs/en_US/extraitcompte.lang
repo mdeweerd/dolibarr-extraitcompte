@@ -1,0 +1,17 @@
+# Translation file
+#
+# Module
+#
+Module104201Name = Extrait Compte
+Module104201Desc = Module to generate account extract for a client
+
+# Generic
+ExtraitCompte = Account Extract
+AccountExtractTitle = Account Extract for %s (%s to %s)
+StartDate = Start Date
+Refresh = Refresh
+All = All
+Copy = Copy
+CopiedToClipboard = Copied to clipboard!
+ReportPeriodInfo = Report period: %s to %s
+AdjustedToIncludeUnpaidInvoices = Adjusted to include unpaid invoices

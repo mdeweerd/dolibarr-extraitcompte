@@ -1,0 +1,17 @@
+# Translation file
+#
+# Module
+#
+Module104201Name = Extrait Compte
+Module104201Desc = Module pour générer un extrait de compte pour un client
+
+# Generic
+ExtraitCompte = Extrait de Compte
+AccountExtractTitle = Extrait de compte pour %s (du %s au %s)
+StartDate = Date de début
+Refresh = Rafraîchir
+All = Tout
+Copy = Copier
+CopiedToClipboard = Copié dans le presse-papiers !
+ReportPeriodInfo = Période du rapport : %s au %s
+AdjustedToIncludeUnpaidInvoices = Ajusté pour inclure les factures impayées
