@@ -1,4 +1,6 @@
 <?php
+/* Copyright (C) 2025-2026	MDW	<mdeweerd@users.noreply.github.com>
+ */
 include_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
 
 class modExtraitCompte extends DolibarrModules
@@ -57,7 +59,7 @@ class modExtraitCompte extends DolibarrModules
         $r = 0;
 
         // $this->tabs[$r] = 'thirdparty:+extraitcompte:ExtraitCompte:$user->rights->extraitcompte->read:/custom/extraitcompte/card.php?id=__ID__';
-        $this->tabs[$r] = array('data' => 'thirdparty:+extraitcompte:ExtraitCompte:extraitcompte@extraitcompte:$user->hasRight("extraitcompte", "extraitcompte", "read"):/custom/extraitcompte/card.php?id=__ID__');
+        $this->tabs[$r] = array('data' => 'thirdparty:+extraitcompte:ExtraitCompte:extraitcompte@extraitcompte:$user->hasRight("extraitcompte", "extraitcompte", "read"):/extraitcompte/card.php?id=__ID__');
     }
 
     public function init($options = '')

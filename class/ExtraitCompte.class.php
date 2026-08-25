@@ -1,4 +1,6 @@
 <?php
+/* Copyright (C) 2025-2026	MDW	<mdeweerd@users.noreply.github.com>
+ */
 
 class ExtraitCompte
 {
@@ -52,9 +54,8 @@ class ExtraitCompte
         $earliest_unpaid_date = $this->findEarliestUnpaidInvoiceDate($all_invoices);
 
         // Apply backtrack rule: if there's an unpaid invoice older than start_date, adjust start_date
-        // Convert start_date string to timestamp for comparison
-        $start_timestamp = dol_string_nohtml_nojs($start_date);
-        if ($earliest_unpaid_date && $earliest_unpaid_date < $this->db->jdate($start_timestamp)) {
+        // $earliest_unpaid_date is a timestamp, $start_date is a string in YYYY-MM-DD format
+        if ($earliest_unpaid_date && $start_date && $earliest_unpaid_date < strtotime($start_date)) {
             $start_date = dol_print_date($earliest_unpaid_date, '%Y-%m-%d');
         }
 
@@ -220,17 +221,17 @@ class ExtraitCompte
 
     /**
      * Get the first day of the previous trimester
-     * 
+     *
      * @return string Date in YYYY-MM-DD format
      */
     private function getFirstDayOfPreviousTrimester()
     {
         $current_month = (int)date('n');
         $current_year = (int)date('Y');
-        
+
         // Determine current trimester (1-4, 5-8, 9-12)
         $current_trimester = ceil($current_month / 3);
-        
+
         // Previous trimester
         if ($current_trimester == 1) {
             $prev_trimester = 4;
@@ -239,39 +240,39 @@ class ExtraitCompte
             $prev_trimester = $current_trimester - 1;
             $year = $current_year;
         }
-        
+
         // Calculate first month of previous trimester
         $first_month = (($prev_trimester - 1) * 3) + 1;
-        
+
         // Return first day of that month
         return sprintf('%04d-%02d-01', $year, $first_month);
     }
 
     /**
      * Find the earliest unpaid invoice date that is incomplete and not abandoned
-     * 
+     *
      * @param array $invoices Array of invoice entries from liste_array
      * @return string|null Date in YYYY-MM-DD format, or null if no such invoice
      */
     private function findEarliestUnpaidInvoiceDate($invoices)
     {
         $earliest_date = null;
-        
+
         foreach ($invoices as $invoice_entry) {
             $invoiceObj = new Facture($this->db);
             if ($invoiceObj->fetch($invoice_entry['id']) < 0) {
                 continue;
             }
-            
+
             // Check if invoice is unpaid and not abandoned
             $paid = $invoiceObj->getSommePaiement();
             $remaining = $invoiceObj->total_ttc - $paid;
-            
+
             // Incomplete means status is not closed/completed
             // Not abandoned means it's not in a cancelled/abandoned state
             // Unpaid means remaining > 0
             $status = $invoiceObj->statut;
-            
+
             // In Dolibarr, status values:
             // 0 = Draft, 1 = Validated, 2 = Paid (closed), 3 = Cancelled
             // We want invoices that are not cancelled (status != 3) and not fully paid
@@ -281,7 +282,7 @@ class ExtraitCompte
                 }
             }
         }
-        
+
         return $earliest_date;
     }
 }
