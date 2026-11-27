@@ -1,4 +1,115 @@
-# PLACEHOLDER: the first run of the analyse workflow replaces this file
-# with the generated baseline (see PLAN.md, Phase 0).
 parameters:
-	ignoreErrors: []
+	ignoreErrors:
+		-
+			message: '#^Constant DOL_VERSION not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: admin/about.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: admin/about.php
+
+		-
+			message: '#^Constant DOL_VERSION not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: admin/extraitcompte.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 1
+			path: admin/extraitcompte.php
+
+		-
+			message: '#^Property Societe\:\:\$id \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: card.php
+
+		-
+			message: '#^Access to an undefined property ExtraitCompte\:\:\$db\.$#'
+			identifier: property.notFound
+			count: 13
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Call to function is_array\(\) with list\<mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:__construct\(\) has parameter \$db with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:displayExtraitCompte\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:displayExtraitCompte\(\) has parameter \$all_dates with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:displayExtraitCompte\(\) has parameter \$client_id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:displayExtraitCompte\(\) has parameter \$start_date with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:findEarliestUnpaidInvoiceDate\(\) has parameter \$invoices with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:findEarliestUnpaidInvoiceDate\(\) never returns string so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:findEarliestUnpaidInvoiceDate\(\) should return string\|null but returns int\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:getCreditNotesFromInvoice\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Method ExtraitCompte\:\:getCreditNotesFromInvoice\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: class/ExtraitCompte.class.php
+
+		-
+			message: '#^Property DolibarrModules\:\:\$module_position \(string\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: core/modules/modExtraitCompte.class.php
+
+		-
+			message: '#^Property DolibarrModules\:\:\$tabs \(array\<array\{data\: string, entity\: int\}\|string\>\) does not accept non\-empty\-array\<array\{data\: string, entity\?\: int\}\|string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: core/modules/modExtraitCompte.class.php
