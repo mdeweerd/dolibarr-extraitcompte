@@ -286,5 +286,3 @@ class ExtraitCompte
         return $earliest_date;
     }
 }
-
-
