@@ -13,7 +13,7 @@ class modExtraitCompte extends DolibarrModules
         $this->numero = 104201;
         $this->rights_class = 'extraitcompte';
         $this->family = "financial";
-        $this->module_position = 500;
+        $this->module_position = '500';
         $this->name = preg_replace('/^mod/i', '', get_class($this));
         $this->description = "Module to generate account extract for a client";
         $this->descriptionlong = "This module allows you to generate an account extract for a client in Dolibarr.";
@@ -59,7 +59,7 @@ class modExtraitCompte extends DolibarrModules
         $r = 0;
 
         // $this->tabs[$r] = 'thirdparty:+extraitcompte:ExtraitCompte:$user->rights->extraitcompte->read:/custom/extraitcompte/card.php?id=__ID__';
-        $this->tabs[$r] = array('data' => 'thirdparty:+extraitcompte:ExtraitCompte:extraitcompte@extraitcompte:$user->hasRight("extraitcompte", "extraitcompte", "read"):/extraitcompte/card.php?id=__ID__');
+        $this->tabs[$r] = array('data' => 'thirdparty:+extraitcompte:ExtraitCompte:extraitcompte@extraitcompte:$user->hasRight("extraitcompte", "extraitcompte", "read"):/extraitcompte/card.php?id=__ID__', 'entity' => 0);
     }
 
     public function init($options = '')

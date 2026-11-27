@@ -12,7 +12,7 @@ global $db, $langs, $user, $conf;
 // Load translation files required by the page
 $langs->loadLangs(array("companies", "bills", "payments"));
 
-$client_id = GETPOST('id', 'int');
+$client_id = (int) GETPOST('id', 'int');
 $start_date = GETPOST('start_date', 'alpha');
 $all_dates = GETPOST('all_dates', 'alpha');
 

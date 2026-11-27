@@ -44,6 +44,9 @@ if (!defined('DOL_MAIN_URL_ROOT')) {
 if (!defined('MAIN_DB_PREFIX')) {
 	define('MAIN_DB_PREFIX', 'llx_');
 }
+if (!defined('DOL_VERSION')) {
+	define('DOL_VERSION', '24.0.0');
+}
 
 // Signatures copied from htdocs/main.inc.php of the Dolibarr 24.0 branch.
 if (!function_exists('llxHeader')) {

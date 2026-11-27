@@ -13,7 +13,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
  *
  * Phan config for the module of this repository - Phan 6.x (latest). Run
  * from the repository root with the Dolibarr core checkout in dolibarr/
@@ -57,7 +56,7 @@ return [
 	// bootstrap. The module lives at the root of the repository: its
 	// entry pages are files, not a directory.
 	'file_list' => [
-		__DIR__ . '/../.ci/dolibarr-runtime.php',
+		__DIR__ . '/../.ci/dolibarr-constants.php',
 		__DIR__ . '/../card.php',
 	],
 
@@ -65,6 +64,7 @@ return [
 		// Parsed for context, excluded from analysis below.
 		__DIR__ . '/../dolibarr/htdocs/core',
 		__DIR__ . '/../dolibarr/htdocs/societe/class',
+		__DIR__ . '/../dolibarr/htdocs/user/class',
 		__DIR__ . '/../dolibarr/htdocs/compta/facture/class',
 		__DIR__ . '/../dolibarr/htdocs/compta/paiement/class',
 		// Analysed.
