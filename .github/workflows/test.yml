@@ -5,7 +5,7 @@
 # retagged with install/step5.php, conf.php with forced authentication)
 # follows mdeweerd/dolibarr-mcp (.github/workflows/integration.yml),
 # adapted to a PHP module: the repository root IS the module, deployed
-# as a symlink in htdocs/custom the way a developer does it.
+# as a real copy in htdocs/custom the way a developer does it.
 name: test
 permissions:
   contents: read
@@ -139,19 +139,42 @@ jobs:
       # Through bash on purpose: the executable bit in git never decides
       # the job (run, not rely).
       - name: Load demo database and configure the instance
-        run: bash .ci/scripts/setup-test-instance.sh
+        run: |
+          set -o pipefail
+          bash .ci/scripts/setup-test-instance.sh 2>&1 | tee setup-test-instance.log
+      - name: Surface the instance setup failure as annotations
+        if: failure()
+        run: |
+          set -uo pipefail
+          if [ ! -s setup-test-instance.log ]; then exit 0; fi
+          tail -12 setup-test-instance.log | cut -c1-400 | while IFS= read -r line; do printf '::error::%s\n' "${line}"; done
 
 
       # The module lives at the root of this repository: the whole
       # checkout is the module, deployed the way a developer does it.
-      - name: Deploy the module the way a developer does it
-        run: ln -sfn "${GITHUB_WORKSPACE}" "${DOLIBARR_HTDOCS}/custom/${MODULE}"
+      # A real copy, not a symlink: module pages include main.inc.php
+      # through a relative path ("../../main.inc.php") that PHP
+      # resolves against the real script directory, and a symlink
+      # would leave that directory outside htdocs.
+      - name: Deploy the module as a real copy
+        run: |
+          mkdir -p "${DOLIBARR_HTDOCS}/custom/${MODULE}"
+          tar -C "${GITHUB_WORKSPACE}" --exclude=.git -cf - . \
+            | tar -C "${DOLIBARR_HTDOCS}/custom/${MODULE}" -xf -
 
       # Activates the module the way Home - Setup - Modules does (which
       # replays the activation data), then grants the module rights to
       # the CI user, who does not implicitly hold them as an admin.
       - name: Activate the module and grant its rights
-        run: php .ci/scripts/activate-module.php
+        run: |
+          set -o pipefail
+          php .ci/scripts/activate-module.php 2>&1 | tee activate-module.log
+      - name: Surface the activation failure as annotations
+        if: failure()
+        run: |
+          set -uo pipefail
+          if [ ! -s activate-module.log ]; then exit 0; fi
+          tail -12 activate-module.log | cut -c1-400 | while IFS= read -r line; do printf '::error::%s\n' "${line}"; done
 
       # One process per test file: a fatal in one file takes that file
       # down, not the whole suite. The test files bootstrap themselves
@@ -187,7 +210,17 @@ jobs:
       # body or the server log, and the marker of the feature on each
       # module page (a forbidden zone answers 200 as well).
       - name: Page smoke
-        run: bash .ci/scripts/smoke-pages.sh
+        run: |
+          set -o pipefail
+          bash .ci/scripts/smoke-pages.sh 2>&1 | tee page-smoke.log
+      - name: Surface the page smoke failure as annotations
+        if: failure()
+        run: |
+          set -uo pipefail
+          if [ ! -s page-smoke.log ]; then exit 0; fi
+          grep -aE 'ERROR:|Precheck:|Probe:|PHP Fatal|PHP Parse|Uncaught' page-smoke.log | head -12 > /tmp/smoke-lines.log || true
+          if [ ! -s /tmp/smoke-lines.log ]; then tail -12 page-smoke.log > /tmp/smoke-lines.log; fi
+          cut -c1-400 /tmp/smoke-lines.log | while IFS= read -r line; do printf '::error::%s\n' "${line}"; done
 
       - name: Provide server log as artifact
         uses: actions/upload-artifact@v7
