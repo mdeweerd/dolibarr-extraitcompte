@@ -13,6 +13,8 @@ includes:
 parameters:
 	bootstrapFiles:
 		- .ci/phpstan-bootstrap.php
+	scanFiles:
+		- .ci/dolibarr-constants.php
 	phpVersion: 80200
 	level: 10
 	fileExtensions:
@@ -28,6 +30,7 @@ parameters:
 	scanDirectories:
 		- dolibarr/htdocs/core
 		- dolibarr/htdocs/societe/class
+		- dolibarr/htdocs/user/class
 		- dolibarr/htdocs/compta/facture/class
 		- dolibarr/htdocs/compta/paiement/class
 	excludePaths:
