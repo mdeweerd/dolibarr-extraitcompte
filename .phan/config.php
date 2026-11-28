@@ -13,7 +13,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
+ */
+
+/**
  * Phan config for the module of this repository - Phan 6.x (latest). Run
  * from the repository root with the Dolibarr core checkout in dolibarr/
  * (see .github/workflows/analyse.yml). Adapted from the Dolibarr core
@@ -55,26 +57,29 @@ return [
 	// .ci/dolibarr-runtime.php, which PHPStan loads through its own
 	// bootstrap. The module lives at the root of the repository: its
 	// entry pages are files, not a directory.
+	// Paths relative to the repository root Phan runs from: Phan
+	// identifies analysed files by exactly these paths, and the
+	// generated baseline (load AND save) keys them the same way.
 	'file_list' => [
-		__DIR__ . '/../.ci/dolibarr-constants.php',
-		__DIR__ . '/../card.php',
+		'.ci/dolibarr-runtime.php',
+		'card.php',
 	],
 
 	'directory_list' => [
 		// Parsed for context, excluded from analysis below.
-		__DIR__ . '/../dolibarr/htdocs/core',
-		__DIR__ . '/../dolibarr/htdocs/societe/class',
-		__DIR__ . '/../dolibarr/htdocs/user/class',
-		__DIR__ . '/../dolibarr/htdocs/compta/facture/class',
-		__DIR__ . '/../dolibarr/htdocs/compta/paiement/class',
+		'dolibarr/htdocs/core',
+		'dolibarr/htdocs/societe/class',
+		'dolibarr/htdocs/compta/facture/class',
+		'dolibarr/htdocs/compta/paiement/class',
 		// Analysed.
-		__DIR__ . '/../admin',
-		__DIR__ . '/../class',
-		__DIR__ . '/../core',
+		'admin',
+		'class',
+		'core',
 	],
 
 	'exclude_analysis_directory_list' => [
-		__DIR__ . '/../dolibarr',
+		'dolibarr',
+		'.ci',
 	],
 
 	// Single process: deterministic and within the memory budget of the

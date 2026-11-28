@@ -13,8 +13,6 @@ includes:
 parameters:
 	bootstrapFiles:
 		- .ci/phpstan-bootstrap.php
-	scanFiles:
-		- .ci/dolibarr-constants.php
 	phpVersion: 80200
 	level: 10
 	fileExtensions:
