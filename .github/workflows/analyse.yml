@@ -70,7 +70,17 @@ jobs:
           # report in the log, not only on the raw console.
           if grep -q 'PLACEHOLDER' phpstan-baseline.neon 2>/dev/null; then
             echo "No PHPStan baseline yet: generating it."
-            php phpstan.phar analyse -c phpstan.neon.dist --no-progress --memory-limit=2G --generate-baseline 2>&1 | tee /tmp/phpstan.log
+            # --generate-baseline exits 1 on a clean analysis ("No
+            # errors were found during the analysis. Baseline could
+            # not be generated.") and writes no file then: an empty
+            # baseline is the correct snapshot of a clean module, so
+            # write it here and let the step pass.
+            if php phpstan.phar analyse -c phpstan.neon.dist --no-progress --memory-limit=2G --generate-baseline 2>&1 | tee /tmp/phpstan.log; then
+              :
+            else
+              grep -q 'No errors were found' /tmp/phpstan.log || exit 1
+              printf 'parameters:\n\tignoreErrors: []\n' > phpstan-baseline.neon
+            fi
           else
             php phpstan.phar analyse -c phpstan.neon.dist --no-progress --memory-limit=2G 2>&1 | tee /tmp/phpstan.log
           fi
