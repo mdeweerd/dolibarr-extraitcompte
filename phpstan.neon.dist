@@ -28,6 +28,7 @@ parameters:
 	scanDirectories:
 		- dolibarr/htdocs/core
 		- dolibarr/htdocs/societe/class
+		- dolibarr/htdocs/user/class
 		- dolibarr/htdocs/compta/facture/class
 		- dolibarr/htdocs/compta/paiement/class
 	excludePaths:

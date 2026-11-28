@@ -1,1 +1,6 @@
 .aider*
+*.swp
+dolibarr/
+dolibarr.tar.gz
+phan.phar
+phpstan.phar

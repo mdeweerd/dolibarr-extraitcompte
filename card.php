@@ -2,17 +2,14 @@
 /* Copyright (C) 2025-2026	MDW	<mdeweerd@users.noreply.github.com>
  */
 // Load Dolibarr environment
-
-if (false === (@include_once '../../main.inc.php')) {  // From htdocs directory
-	include_once '../../../main.inc.php'; // From "custom" directory
-}
+require_once __DIR__.'/core/bootstrap.php';
 
 global $db, $langs, $user, $conf;
 
 // Load translation files required by the page
 $langs->loadLangs(array("companies", "bills", "payments"));
 
-$client_id = GETPOST('id', 'int');
+$client_id = (int) GETPOST('id', 'int');
 $start_date = GETPOST('start_date', 'alpha');
 $all_dates = GETPOST('all_dates', 'alpha');
 
