@@ -42,4 +42,3 @@ function llxHeader($head = '', $title = '', $help_url = '', $target = '', $disab
 function llxFooter($comment = '', $zone = 'private', $disabledoutputofmessages = 0)
 {
 }
-
